@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  base: &base
+    hostname: base
+    image: random_roller
+    ports: []
+    stdin_open: true
+    tty: true
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    volumes:
+      - .:/home/node/app
+  app: &app
+    <<: *base
+    hostname: app
+    command: yarn run dev
+    env_file: .env
