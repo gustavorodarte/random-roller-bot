@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 const Discord = require('discord.io');
 const RandomOrg = require('random-org');
 
@@ -38,7 +39,7 @@ const botResponse = (message, channelID, user) => {
 
 const getDicesValues = async (dicesAmount, diceType) => {
   try {
-    const { random: { data} } = await random.generateIntegers({
+    const { random: { data } } = await random.generateIntegers({
       min: 1,
       max: diceType,
       n: dicesAmount,
@@ -49,22 +50,26 @@ const getDicesValues = async (dicesAmount, diceType) => {
   }
 };
 
-bot.on('message', async (user, userID, channelID, message, event) => {  
-  if (message.substring(0, 1) === '#') {
-    const [diceType] = message.match(/(?<=d)\d*/) || [];
-    const [diceAmount] = message.match(/\d*(?=d)/) || [];
-    const [targetNumberMatch] = message.match(/(?<=(x|e))\d*/) || [];
-    const [successCounterTypeMatch] = message.match(/[xe]/) || [];
+bot.on('message', async (user, userID, channelID, message) => {
+  try {
+    if (message.substring(0, 1) === '#') {
+      const [diceType] = message.match(/(?<=d)\d*/) || [];
+      const [diceAmount] = message.match(/\d*(?=d)/) || [];
+      const [targetNumberMatch] = message.match(/(?<=(x|e))\d*/) || [];
+      const [successCounterTypeMatch] = message.match(/[xe]/) || [];
 
-    const dicesValues = await getDicesValues(diceAmount, diceType);
-    const isDamageRoll = Boolean(successCounterTypeMatch === 'e');
-    const diceRoll = `${diceAmount}d${diceType}`;
+      const dicesValues = await getDicesValues(diceAmount, diceType);
+      const isDamageRoll = Boolean(successCounterTypeMatch === 'e');
+      const diceRoll = `${diceAmount}d${diceType}`;
 
-    if(targetNumberMatch) {
-      botResponse(getBotResponse(diceRoll, dicesValues, targetNumberMatch, isDamageRoll), channelID, user);
-    } else {
-      botResponse(getBotResponse(diceRoll, dicesValues), channelID, user);
+      if (targetNumberMatch) {
+        botResponse(getBotResponse(diceRoll, dicesValues, targetNumberMatch, isDamageRoll), channelID, user);
+      } else {
+        botResponse(getBotResponse(diceRoll, dicesValues), channelID, user);
+      }
     }
+  } catch (error) {
+    console.error(error);
   }
 });
 
